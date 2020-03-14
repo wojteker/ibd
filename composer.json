@@ -4,5 +4,8 @@
         "psr-4": {
             "Ibd\\": "./src/"
         }
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^5.0"
     }
 }
