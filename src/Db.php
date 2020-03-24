@@ -20,10 +20,10 @@ class Db
 	 * @var \PDO
 	 */
 	private $pdo;
-
+	
 	public function __construct()
 	{
-		$this->pdo = new \PDO("mysql:host={$this->dbHost};dbname={$this->dbName}", $this->dbLogin, $this->dbPassword);
+		$this->pdo = new \PDO('mysql:host=' . $this->dbHost . ';dbname=' . $this->dbName, $this->dbLogin, $this->dbPassword);
 		$this->pdo->query("SET NAMES utf8");
 	}
 
@@ -37,12 +37,13 @@ class Db
 	public function pobierzWszystko($sql, $params = null)
 	{
 		$stmt = $this->pdo->prepare($sql);
-
+		
 		if (!empty($params) && is_array($params)) {
-			foreach ($params as $k => $v)
-				$stmt->bindParam($k, $v);
+			foreach ($params as $k => $v) {
+				$stmt->bindParam($k, $v, \PDO::PARAM_STR);
+			}
 		}
-
+		
 		return $stmt->execute() ? $stmt->fetchAll() : false;
 	}
 
@@ -57,7 +58,28 @@ class Db
 	{
 		$sql = "SELECT * FROM $table WHERE id = :id";
 		$stmt = $this->pdo->prepare($sql);
-
+		
 		return $stmt->execute([':id' => $id]) ? $stmt->fetch() : false;
+	}
+
+	/**
+	 * Liczy rekordy zwrócone przez zapytanie.
+	 * 
+	 * @param string $sql
+	 * @param array $params
+	 * @return int
+	 */
+	public function policzRekordy($sql, $params)
+	{
+		$stmt = $this->pdo->prepare($sql);
+		
+		if (!empty($params) && is_array($params)) {
+			foreach($params as $k => $v) {
+				$stmt->bindParam($k, $v);
+			}
+		}
+		$stmt->execute();
+		
+		return $stmt->rowCount();
 	}
 }

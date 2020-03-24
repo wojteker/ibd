@@ -1,11 +1,11 @@
 {
-    "require": {},
-    "autoload": {
-        "psr-4": {
-            "Ibd\\": "./src/"
-        }
-    },
-    "require-dev": {
-        "symfony/var-dumper": "^5.0"
+  "require": {},
+  "autoload": {
+    "psr-4": {
+      "Ibd\\": "./src/"
     }
+  },
+  "require-dev": {
+    "symfony/var-dumper": "^5.0"
+  }
 }
