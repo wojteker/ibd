@@ -1,11 +1,24 @@
+<?php
+use Ibd\Ksiazki;
+require_once 'src/Db.php';
+require_once 'src/Ksiazki.php';
+$ksiazki = new Ksiazki();
+$bestsellers = $ksiazki->pobierzBestsellery();
+
+?>
+
 <div class="col-md-2">
 	<h1>Bestsellery</h1>
 	
-	<ul>
-		<li>Książka 1</li>
-		<li>Książka 2</li>
-		<li>Książka 3</li>
-		<li>Książka 4</li>
-		<li>Książka 5</li>
-	</ul>
+	<ol>
+        <?php foreach($bestsellers as $bestseller): ?>
+        <li>
+            <a href="ksiazki.szczegoly.php?id=<?=$bestseller['id']?>">
+                <p><img src="zdjecia/<?=['zdjecie'] ?>" alt="<?=$bestseller['tytul']?>"></p>
+                <p><?= $bestseller['tytul'] ?></p>
+                <p><?= $bestseller['autor'] ?></p>
+                </a>
+        </li>
+        <?php endforeach; ?>
+	</ol>
 </div>

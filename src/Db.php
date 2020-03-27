@@ -56,7 +56,11 @@ class Db
 	 */
 	public function pobierz($table, $id)
 	{
-		$sql = "SELECT * FROM $table WHERE id = :id";
+//		$sql = "SELECT * FROM $table WHERE id = :id";
+		$sql = "SELECT CONCAT(a.imie, ' ', a.nazwisko) as autor , kat.nazwa as kategoria, k.* FROM $table k
+                JOIN  autorzy a ON k.id_autora = a.id
+                JOIN kategorie kat ON k.id_kategorii = kat.id
+                WHERE k.id = :id";
 		$stmt = $this->pdo->prepare($sql);
 		
 		return $stmt->execute([':id' => $id]) ? $stmt->fetch() : false;
