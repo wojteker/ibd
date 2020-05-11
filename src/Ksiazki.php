@@ -37,10 +37,7 @@ class Ksiazki
     public function pobierzZapytanie($params)
     {
         $parametry = [];
-//        $sql = "SELECT k.* FROM ksiazki k WHERE 1=1 ";
-        $sql = "SELECT CONCAT(a.imie, ' ', a.nazwisko) as autor , kat.nazwa as kategoria, k.* FROM ksiazki k
-                JOIN autorzy a ON k.id_autora = a.id
-                JOIN kategorie kat ON k.id_kategorii = kat.id";
+        $sql = "SELECT k.* FROM ksiazki k WHERE 1=1 ";
 
         // dodawanie warunków do zapytanie
         if (!empty($params['fraza'])) {
@@ -95,12 +92,8 @@ class Ksiazki
      */
     public function pobierzBestsellery()
     {
-        $sql = "SELECT CONCAT(a.imie, ' ', a.nazwisko) as autor , kat.nazwa as kategoria, k.* FROM ksiazki k
-                JOIN autorzy a ON k.id_autora = a.id
-                JOIN kategorie kat ON k.id_kategorii = kat.id
-                ORDER BY RAND() LIMIT 5";
+        $sql = "SELECT * FROM ksiazki ORDER BY RAND() LIMIT 5";
 
         // uzupełnić funkcję
-        return $this->db->pobierzWszystko($sql);
     }
 }
