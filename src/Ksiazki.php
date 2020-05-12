@@ -37,11 +37,20 @@ class Ksiazki
     public function pobierzZapytanie($params)
     {
         $parametry = [];
-        $sql = "SELECT k.* FROM ksiazki k WHERE 1=1 ";
+        $sql = " SELECT k.*, author.imie, author.nazwisko, category.nazwa
+				 FROM ksiazki k 
+				 JOIN autorzy author ON author.id = k.id_autora
+				 JOIN kategorie category ON category.id = k.id_kategorii
+                 WHERE 1=1
+		 ";
 
         // dodawanie warunków do zapytanie
         if (!empty($params['fraza'])) {
-            $sql .= "AND k.tytul LIKE :fraza ";
+            $sql .= "AND ( k.tytul LIKE :fraza 
+                     OR k.opis LIKE :fraza
+                     OR author.imie LIKE :fraza
+                     OR author.nazwisko LIKE :fraza )
+            ";
             $parametry['fraza'] = "%$params[fraza]%";
         }
         if (!empty($params['id_kategorii'])) {
@@ -51,7 +60,7 @@ class Ksiazki
 
         // dodawanie sortowania
         if (!empty($params['sortowanie'])) {
-            $kolumny = ['k.tytul', 'k.cena'];
+            $kolumny = ['k.tytul', 'k.cena', 'author.nazwisko'];
             $kierunki = ['ASC', 'DESC'];
             [$kolumna, $kierunek] = explode(' ', $params['sortowanie']);
 
@@ -86,14 +95,29 @@ class Ksiazki
         return $this->db->pobierz('ksiazki', $id);
     }
 
-    /**
-     * Pobiera najlepiej sprzedające się książki.
-     *
-     */
     public function pobierzBestsellery()
-    {
-        $sql = "SELECT * FROM ksiazki ORDER BY RAND() LIMIT 5";
+	{
+		$sql = "SELECT book.id, book.tytul, book.zdjecie, author.imie, author.nazwisko FROM ksiazki book
+				JOIN autorzy author ON author.id = book.id_autora
+				ORDER BY RAND() LIMIT 5";
 
-        // uzupełnić funkcję
-    }
+		return $this->db->pobierzWszystko($sql);
+	}
+
+	/**
+	 * Pobiera wszystkie książki, z imieniem i nazwiskiem autora oraz kategorią.
+	 *
+	 * @return array
+	 */
+	public function pobierzWszystieZKategoriaIAutorem(){
+		$sql = " SELECT book.*, author.imie, author.nazwisko, category.nazwa
+				 FROM ksiazki book 
+				 JOIN autorzy author ON author.id = book.id_autora
+				 JOIN kategorie category ON category.id = book.id_kategorii
+		 ";
+
+		return $this->db->wywolajZapytanieSql($sql);
+	}
+
+
 }
