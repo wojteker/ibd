@@ -1,3 +1,11 @@
+<?php
+use Ibd\Ksiazki;
+// pobieranie książek
+$ksiazki = new Ksiazki();
+$lista = $ksiazki->pobierzBestsellery();
+
+?>
+
 <div class="col-md-3">
     <?php if (empty($_SESSION['id_uzytkownika'])): ?>
         <h1>Logowanie</h1>
@@ -24,19 +32,22 @@
             <a href="wyloguj.php" class="btn btn-secondary btn-sm">wyloguj się</a>
         </p>
     <?php endif; ?>
-
-    <h1>Koszyk</h1>
-    <p>
-        Suma wartości książek w koszyku:
-        <strong>0</strong> PLN
-    </p>
-
     <h1>Bestsellery</h1>
+
     <ul>
-        <li>Książka 1</li>
-        <li>Książka 2</li>
-        <li>Książka 3</li>
-        <li>Książka 4</li>
-        <li>Książka 5</li>
+        <?php foreach ($lista as $ks): ?>
+            <a href="ksiazki.szczegoly.php?id=<?= $ks['id'] ?>" title="szczegóły">
+                <li style="width: 300%">
+                    <p><div style="width: 30%">
+                        <?php if (!empty($ks['zdjecie'])): ?>
+                            <img src="zdjecia/<?= $ks['zdjecie'] ?>" alt="<?= $ks['tytul'] ?>" class="img-thumbnail"/>
+                        <?php else: ?>
+                            brak zdjęcia
+                        <?php endif; ?>
+                    </div>
+                    <i><?= $ks['tytul'] ?></i>, <?= $ks['imie_autora'] ?> <?= $ks['nazwisko_autora'] ?></p>
+                </li>
+            </a>
+        <?php endforeach; ?>
     </ul>
 </div>

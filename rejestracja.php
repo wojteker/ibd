@@ -7,11 +7,16 @@ use Valitron\Validator;
 
 $uzytkownicy = new Uzytkownicy();
 $v = new Validator($_POST);
+$komunikat = "";
+
 
 if (isset($_POST['zapisz'])) {
     $v->rule('required', ['imie', 'nazwisko', 'adres', 'email', 'login', 'haslo']);
+    $v->rule('email', ['email']);
 
-    if ($v->validate()) {
+    if ($uzytkownicy->czyIstniejeJuzTakiUzytkownik($_POST['login'], $_POST['email'])) {
+        $komunikat = "Użytkownik o podnym loginie lub adresie email już istnieje.";
+    } else if ($v->validate()) {
         // brak błędów, można dodać użytkownika
         $uzytkownicy->dodaj($_POST);
         header("Location: index.php?msg=1");
@@ -22,20 +27,26 @@ if (isset($_POST['zapisz'])) {
 include 'header.php';
 ?>
 
-<h1>Rejestracja</h1>
+    <h1>Rejestracja</h1>
 
 <?php if ($v->errors()): ?>
     <div class="alert alert-danger">
         <strong>Wystąpił błąd</strong>
         <ul>
-        <?php foreach ($v->errors() as $err): ?>
-            <li><?=implode('<br>', $err) ?></li>
-        <?php endforeach; ?>
+            <?php foreach ($v->errors() as $err): ?>
+                <li><?=implode('<br>', $err) ?></li>
+            <?php endforeach; ?>
         </ul>
     </div>
 <?php endif; ?>
 
-<form method="post" action=""">
+<?php if (!empty($komunikat)): ?>
+    <div class="alert alert-danger">
+        <strong><?=$komunikat?></strong>
+    </div>
+<?php endif; ?>
+
+    <form method="post" action=""">
     <div class="form-group">
         <label for="imie">Imię</label>
         <input type="text" id="imie" name="imie" class="form-control <?= $v->errors('imie') ? 'is-invalid' : '' ?>" value="<?= $_POST['imie'] ?? '' ?>"/>
@@ -66,6 +77,6 @@ include 'header.php';
     </div>
 
     <input type="submit" name="zapisz" id="zapisz" class="btn btn-primary" value="Zarejestruj się" /><br/><br/>
-</form>
+    </form>
 
 <?php include 'footer.php'; ?>

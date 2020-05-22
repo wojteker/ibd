@@ -1,8 +1,4 @@
 <?php
-session_start();
-ini_set('display_errors', 1);
-error_reporting(E_ALL | E_STRICT);
-
 define('ROK_AKADEMICKI', (date('Y') - 1) . '/' . date('Y'));
 
 require_once 'vendor/autoload.php';
@@ -12,7 +8,17 @@ use Ibd\Koszyk;
 
 $koszyk = new Koszyk();
 
-$liczbaKsiazekWKoszyku = $koszyk -> pobierzIloscKsiazekWKoszyku();
+if(!isset($_SESSION))
+{
+    session_start();
+}
+
+$liczbaKsiazekWKoszyku = 0;
+$ksiazkiWKoszyku = $koszyk->pobierzWszystkie();
+foreach($ksiazkiWKoszyku as $ksiazka) {
+    $liczbaKsiazekWKoszyku += $ksiazka['liczba_sztuk'];
+}
+
 $koszykHtml = "<span class='badge badge-dark' id='wKoszyku'>$liczbaKsiazekWKoszyku</span>";
 ?>
 
@@ -47,6 +53,9 @@ $koszykHtml = "<span class='badge badge-dark' id='wKoszyku'>$liczbaKsiazekWKoszy
                 <?= Menu::generujOpcje('index.php', 'Strona główna') ?>
                 <?= Menu::generujOpcje('ksiazki.lista.php', 'Książki') ?>
                 <?= Menu::generujOpcje('koszyk.lista.php', "Koszyk $koszykHtml") ?>
+                <?php if (!empty($_SESSION['id_uzytkownika'])): ?>
+                    <?= Menu::generujOpcje('zamowienie.lista.php', 'Zamówienia') ?>
+                <?php endif; ?>
             </ul>
         </div>
     </nav>
@@ -54,4 +63,4 @@ $koszykHtml = "<span class='badge badge-dark' id='wKoszyku'>$liczbaKsiazekWKoszy
 
 <div class="container">
     <div class="row">
-        <div class="col-md-10">
+        <div class="col-md-9">
